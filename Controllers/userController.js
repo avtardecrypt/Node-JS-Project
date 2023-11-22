@@ -1,6 +1,6 @@
 const User=require("../Models/userModel");
 const asyncerrorhandler=require("../folder/asyncerrorhandler");
-const cutomerror=require("../folder/customerror");
+const customerror=require("../folder/customerror");
 const jwt=require("jsonwebtoken");
 const util=require("util");
 const Blog=require("../Models/BlogModel");
@@ -22,12 +22,12 @@ exports.signup=asyncerrorhandler(async(req,res,next)=>{
 exports.login=asyncerrorhandler(async(req,res,next)=>{
     const{email,password}=req.body;
     if(!email||!password){
-        const error=new cutomerror("Pls provide email and password",400);
+        const error=new customerror("Pls provide email and password",400);
         return next(error);
     }
     const user=await User.findOne({email}).select('+password');
     if(!(await user.comparepassword(password,user.password))){
-        const error=new cutomerror("Passwords do not match",400)
+        const error=new customerror("Passwords do not match",400)
         return next(error)
     }
     const token=signtoken(user._id);
@@ -46,7 +46,7 @@ exports.protect=asyncerrorhandler(async(req,res,next)=>{
         token=testtoken.split(' ')[1];
     }
     if(!token){
-        next(new cutomerror('Enter the token to login'),401);
+        next(new customerror('Enter the token to login'),401);
     }
     const decodedtoken=await util.promisify(jwt.verify)(token,process.env.SECRETSTR);
     const user=await User.findById(decodedtoken.id);
@@ -54,15 +54,29 @@ exports.protect=asyncerrorhandler(async(req,res,next)=>{
     next();
 });
 exports.restrict=(role)=>{
-    return(req,res,next)=>{   
-        const blogid =  Blog.findById(req.params.id);
+    return async (req,res,next)=>{   
+        const blogid = await Blog.findById(req.params.id);
         const createdBy=blogid.createdBy;
-         if (createdBy !== req.user._id && req.user.role !== role){
-            const error=new CustomError("You dont have permission",403);
+        console.log("createdBy", createdBy , req.user._id, req.user.role !== role)
+         if (!createdBy.equals(req.user._id) && req.user.role !== role){
+            const error=new customerror("You dont have permission",403);
             next(error)
          }   
         next();
     }
 }
 
+// exports.restrict=(role)=>{
+//     return(req,res,next)=>{   
+//         const blogid =  Blog.findById(req.params.id);
+//         const createdBy=blogid.createdBy;
+//         if(createdBy != req.user._id ){
+//             if (req.user.role != role){
+//                 const error=new customerror("You dont have permission",403);
+//                 next(error)
+//             }
+//         next();
+//     }
+//   }
+// }
 
