@@ -33,6 +33,9 @@ exports.createblog=asyncerrorhandler(async(req,res,next)=>{
             status:"error",
             message:`${containsOffensiveWord(title) ? "Title" : "Subtitle"}  must not contain offensive or bad words`
         })
+        const error=new cutomerror("must not contain offensive or bad words",400);
+        return next(error);
+
     }
   
     req.body.createdBy = req.user._id
