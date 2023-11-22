@@ -33,6 +33,9 @@ exports.createblog=asyncerrorhandler(async(req,res,next)=>{
             status:"error",
             message:`${containsOffensiveWord(title) ? "Title" : "Subtitle"}  must not contain offensive or bad words`
         })
+        const error=new customerror("must not contain offensive or bad words",400);
+        return next(error);
+
     }
   
     req.body.createdBy = req.user._id
@@ -103,6 +106,7 @@ exports.updateBlog=asyncerrorhandler(async(req,res,next)=>{
 });
 exports.deleteBlog=asyncerrorhandler(async(req,res,next)=>{
     const deleteBlog=await Blog.findByIdAndDelete(req.params.id);
+    console.log(req.body);
     if(!deleteBlog){
         const error=new customerror("Blog not found",401);
         return next(error)

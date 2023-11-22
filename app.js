@@ -7,6 +7,8 @@ dotenv.config();
 let app=express();
 app.use(express.json());
 
+
+
 app.use("/api/",user);
 app.use("/api/posts",router);
 mongoose.connect(process.env.CONNSTR,{
@@ -15,7 +17,7 @@ mongoose.connect(process.env.CONNSTR,{
 }).catch((error)=>{
     console.log("ERROR");
 });
-const port=6842;
+const port=process.env.PORT || 6842;
 app.listen(port,()=>{
-    console.log("running on port 6842");
+    console.log("running on port", port);
 })
