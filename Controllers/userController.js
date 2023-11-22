@@ -66,17 +66,5 @@ exports.restrict=(role)=>{
     }
 }
 
-// exports.restrict=(role)=>{
-//     return(req,res,next)=>{   
-//         const blogid =  Blog.findById(req.params.id);
-//         const createdBy=blogid.createdBy;
-//         if(createdBy != req.user._id ){
-//             if (req.user.role != role){
-//                 const error=new customerror("You dont have permission",403);
-//                 next(error)
-//             }
-//         next();
-//     }
-//   }
-// }
+
 
